@@ -81,7 +81,7 @@ const Contact: React.FC = () => {
                     <div>
                       <span className="text-[11px] font-mono text-slate-400 dark:text-gray-400 block">Direct Email:</span>
                       <span className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-neon-blue dark:group-hover:text-neon-cyan transition-colors">
-                        msiyab10492@gmail.com
+                        cybersphere.info@gmail.com
                       </span>
                     </div>
                   </div>
