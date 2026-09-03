@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Siab Ahmad Khan - Portfolio</title>
+    <meta name="description" content="A modern, responsive, and visually stunning portfolio website for Siab Ahmad Khan, a Full Stack Developer. It features a dark theme with neon accents, smooth animations, and interactive sections showcasing skills, projects, and experience." />
+    <meta property="og:title" content="Siab Ahmad Khan - Portfolio" />
+    <meta property="og:description" content="A modern, responsive, and visually stunning portfolio website for Siab Ahmad Khan, a Full Stack Developer. It features a dark theme with neon accents, smooth animations, and interactive sections showcasing skills, projects, and experience." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/index.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
+            },
+            colors: {
+              'neon-blue': '#00BFFF',
+              'neon-purple': '#8A2BE2',
+              'neon-cyan': '#00FFFF',
+              'neon-pink': '#FF1493',
+              'cyber-black': '#07090e',
+              'cyber-dark': '#0f172a',
+              'cyber-card': '#131b2e',
+            },
+            animation: {
+              'gradient-x': 'gradient-x 15s ease infinite',
+              'text-cycle': 'text-cycle 10s linear infinite',
+              'float': 'float 6s ease-in-out infinite',
+              'fade-in-up': 'fade-in-up 0.8s ease-out forwards',
+              'spin-slow': 'spin 12s linear infinite',
+              'ping-slow': 'ping 3s cubic-bezier(0, 0, 0.2, 1) infinite',
+            },
+            keyframes: {
+              'gradient-x': {
+                '0%, 100%': { 'background-position': '0% 50%' },
+                '50%': { 'background-position': '100% 50%' },
+              },
+              'text-cycle': {
+                '0%, 20%': { transform: 'translateY(0)' },
+                '25%, 45%': { transform: 'translateY(-100%)' },
+                '50%, 70%': { transform: 'translateY(-200%)' },
+                '75%, 95%': { transform: 'translateY(-300%)' },
+                '100%': { transform: 'translateY(-400%)' },
+              },
+              'float': {
+                '0%': { transform: 'translatey(0px)' },
+                '50%': { transform: 'translatey(-15px)' },
+                '100%': { transform: 'translatey(0px)' },
+              },
+              'fade-in-up': {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-gray-100 antialiased transition-colors duration-500">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
