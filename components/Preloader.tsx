@@ -79,7 +79,7 @@ const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-neon-blue via-neon-purple to-neon-cyan p-[2px] shadow-[0_0_25px_rgba(0,191,255,0.4)]">
               <div className="w-full h-full bg-[#07090e] rounded-2xl overflow-hidden">
                 <img
-                  src="/images/image.jpeg"
+                  src="/image.jpeg"
                   alt="Siyab Ahmad Khan"
                   className="w-full h-full object-cover"
                 />
