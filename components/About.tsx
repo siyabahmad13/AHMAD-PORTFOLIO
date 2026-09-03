@@ -38,7 +38,7 @@ const About: React.FC = () => {
               <div className="w-60 h-60 md:w-68 md:h-68 rounded-3xl bg-gradient-to-tr from-neon-blue via-neon-purple to-neon-cyan p-[3px] shadow-[0_0_35px_rgba(0,191,255,0.25)] group-hover:shadow-[0_0_50px_rgba(138,43,226,0.4)] transition-all duration-500">
                 <div className="w-full h-full bg-white dark:bg-[#0d1424] rounded-3xl overflow-hidden relative">
                   <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop"
+                    src="/images/image.jpeg"
                     alt="Siab Ahmad Khan"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />

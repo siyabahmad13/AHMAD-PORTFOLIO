@@ -150,7 +150,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
   };
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText('msiyab10492@gmail.com');
+    navigator.clipboard.writeText('cybersphere.info@gmail.com');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -182,8 +182,8 @@ const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
           <span className="text-xs font-semibold text-slate-800 dark:text-gray-200 tracking-wide">
             Open for Full-Time Roles & Custom Contracts
           </span>
-          <span className="text-slate-400 dark:text-gray-500">•</span>
-          <span className="text-xs text-neon-blue dark:text-neon-cyan font-mono font-bold">Q3/Q4 2026</span>
+          
+         
         </div>
 
         {/* Display Name */}
@@ -250,7 +250,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenResume }) => {
             ) : (
               <Copy className="w-3.5 h-3.5 text-neon-blue dark:text-neon-cyan" />
             )}
-            <span>msiyab10492@gmail.com</span>
+            <span>cybersphere.info@gmail.com</span>
             {copied && <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold ml-1">Copied!</span>}
           </button>
 

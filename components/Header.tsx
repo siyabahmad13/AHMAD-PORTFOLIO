@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { NAV_LINKS } from '../constants';
 import { useScrollSpy } from '../hooks/useScrollSpy';
 import ThemeToggle from './ThemeToggle';
+
 import { Search, FileText, Menu, X, Sparkles, Terminal } from 'lucide-react';
 
 interface HeaderProps {
@@ -41,13 +42,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenResume, onOpenCommandPalette }) =
             href="#home"
             className="flex items-center gap-2 group cursor-pointer select-none"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-neon-blue to-neon-purple p-[1.5px] shadow-[0_0_15px_rgba(0,191,255,0.3)] group-hover:shadow-[0_0_20px_rgba(0,191,255,0.6)] transition-all">
-              <div className="w-full h-full bg-slate-900 dark:bg-[#080d1a] rounded-xl flex items-center justify-center">
-                <span className="font-mono font-black text-sm text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-white">
-                  SK
-                </span>
-              </div>
-            </div>
+            
             <div className="flex flex-col text-left">
               <span className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight leading-none group-hover:text-neon-blue dark:group-hover:text-neon-cyan transition-colors">
                 Siab Ahmad Khan

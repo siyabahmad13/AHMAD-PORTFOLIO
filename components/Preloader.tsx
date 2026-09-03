@@ -1,17 +1,16 @@
-
-import React, { useState, useEffect } from 'react';
-import { Terminal, Cpu, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Terminal, Cpu, CheckCircle } from "lucide-react";
 
 interface PreloaderProps {
   onComplete?: () => void;
 }
 
 const BOOT_LOGS = [
-  'Initializing design system & layout engine...',
-  'Compiling TypeScript modules & shaders...',
-  'Preparing interactive canvas & physics nodes...',
-  'Loading featured projects & architecture specs...',
-  'Ready. Welcome to Siab Ahmad Khan.',
+  "Initializing design system & layout engine...",
+  "Compiling TypeScript modules & shaders...",
+  "Preparing interactive canvas & physics nodes...",
+  "Loading featured projects & architecture specs...",
+  "Ready. Welcome to Siab Ahmad Khan.",
 ];
 
 const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
@@ -20,17 +19,17 @@ const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         if (onComplete) onComplete();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onComplete]);
 
   useEffect(() => {
     const progressInterval = setInterval(() => {
-      setProgress(prev => {
+      setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(progressInterval);
           setTimeout(() => {
@@ -44,7 +43,7 @@ const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
     }, 240);
 
     const logInterval = setInterval(() => {
-      setLogIndex(prev => (prev < BOOT_LOGS.length - 1 ? prev + 1 : prev));
+      setLogIndex((prev) => (prev < BOOT_LOGS.length - 1 ? prev + 1 : prev));
     }, 400);
 
     return () => {
@@ -69,17 +68,21 @@ const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
               Portfolio V3.4 • Initializing
             </span>
           </div>
-          <span className="text-xs text-neon-cyan font-semibold font-mono">{progress}%</span>
+          <span className="text-xs text-neon-cyan font-semibold font-mono">
+            {progress}%
+          </span>
         </div>
 
         {/* Center Logo Monogram */}
         <div className="flex flex-col items-center justify-center my-3">
           <div className="relative mb-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-neon-blue via-neon-purple to-neon-cyan p-[2px] shadow-[0_0_25px_rgba(0,191,255,0.4)]">
-              <div className="w-full h-full bg-[#07090e] rounded-2xl flex items-center justify-center">
-                <span className="font-mono font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-white">
-                  SK
-                </span>
+              <div className="w-full h-full bg-[#07090e] rounded-2xl overflow-hidden">
+                <img
+                  src="/images/image.jpeg"
+                  alt="Siyab Ahmad Khan"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
             <div className="absolute -inset-1 bg-neon-cyan/20 rounded-2xl blur-md -z-10 animate-pulse" />
@@ -131,4 +134,3 @@ const Preloader: React.FC<PreloaderProps> = ({ onComplete }) => {
 };
 
 export default Preloader;
-
