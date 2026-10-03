@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+:root {
+  /* LIGHT MODE REFINED COLOR SYSTEM */
+  --bg: #F5F5F2;
+  --bg-secondary: #EBEBE7;
+  --carousel-bg: #E3E3DE;
+  --carousel-stage-border: #D6D6D0;
+
+  --text: #171716;
+  --text-secondary: #62625D;
+
+  --border: #D6D6D0;
+  --border-light: #DDDCD6;
+
+  --btn-bg: #171716;
+  --btn-text: #F5F5F2;
+  --btn-hover: #262624;
+
+  --accent: #9A7838;
+  --accent-muted: rgba(154, 120, 56, 0.15);
+
+  --card-bg: #EBEBE7;
+
+  /* Scoped Light Mode Carousel adjustments */
+  --side-card-opacity: 0.74;
+  --side-card-filter: none;
+}
+
+html.dark {
+  /* DARK MODE (LOCKED & UNCHANGED) */
+  --bg: #111111;
+  --bg-secondary: #191918;
+  --carousel-bg: transparent;
+  --carousel-stage-border: transparent;
+
+  --text: #F5F5F2;
+  --text-secondary: #A3A3A0;
+
+  --border: #2C2C2A;
+  --border-light: #222220;
+
+  --btn-bg: #F5F5F2;
+  --btn-text: #111111;
+  --btn-hover: #E4E4E0;
+
+  --accent: #C6A15B;
+  --accent-muted: rgba(198, 161, 91, 0.15);
+
+  --card-bg: #161615;
+
+  /* Dark Mode Carousel values (LOCKED & UNCHANGED) */
+  --side-card-opacity: 0.55;
+  --side-card-filter: brightness(0.9);
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--text);
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Global Smooth Color Transition */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Custom Typography & Utility Classes */
+.font-mono-meta {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Selection style */
+::selection {
+  background-color: var(--accent);
+  color: #111111;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   HERO CONTINUOUS FLOWING NEON ENERGY SYSTEM
+   Electric Blue -> Cyan -> Violet -> Pink liquid light streams
+   ========================================================================== */
+
+/* Initial soft page load entrances */
+.hero-portrait-frame {
+  animation: hero-portrait-enter 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-neon-container {
+  animation: hero-neon-reveal 1000ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+}
+
+@keyframes hero-portrait-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hero-neon-reveal {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.85;
+  }
+}
+
+/* Primary continuous liquid light stream (14s seamless loop) */
+.hero-neon-stream-1 {
+  animation: hero-neon-flow-1 14s linear infinite;
+}
+
+@keyframes hero-neon-flow-1 {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+/* Secondary harmonic trailing stream (14s seamless loop, 50% offset) */
+.hero-neon-stream-2 {
+  animation: hero-neon-flow-2 14s linear infinite;
+}
+
+@keyframes hero-neon-flow-2 {
+  from {
+    stroke-dashoffset: -500;
+  }
+  to {
+    stroke-dashoffset: -1500;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-portrait-frame,
+  .hero-neon-container,
+  .hero-neon-stream-1,
+  .hero-neon-stream-2 {
+    animation: none !important;
+  }
+}
+
+
+
