@@ -136,7 +136,7 @@ export function ProjectsDropdown({ onNavigate }: ProjectsDropdownProps) {
                   </span>
                 </div>
 
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded border border-[var(--border)] bg-[#111111] mb-3">
+                <div className="relative aspect-[19/9] w-full overflow-hidden rounded border border-[var(--border)] bg-[#111111] mb-3">
                   <Image
                     src={activeProject.image}
                     alt={activeProject.title}

@@ -225,7 +225,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           <span className="text-[12px] font-mono-meta tracking-[0.2em] uppercase text-[var(--accent)] font-semibold block">
             PRODUCT PRESENTATION &amp; INTERFACE
           </span>
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[6px] border border-[var(--border)] bg-[#141413] shadow-sm">
+          <div className="relative aspect-[19/9] w-full overflow-hidden rounded-[6px] border border-[var(--border)] bg-[#141413] shadow-sm">
             <Image
               src={project.image}
               alt={`${project.title} Interface Presentation`}
