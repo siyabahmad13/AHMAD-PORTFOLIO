@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ThemeToggle } from "./ThemeToggle";
 import { ProjectsDropdown } from "./ProjectsDropdown";
 import { projects } from "@/data/projects";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       if (window.scrollY > 20) {
         setScrolled(true);
@@ -24,7 +25,9 @@ export function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full transition-all duration-300 border-b border-[var(--border)] ${
+      className={`sticky top-0 z-40 w-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] border-b border-[var(--border)] ${
+        mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1.5"
+      } ${
         scrolled
           ? "py-3 bg-[var(--bg)]/90 backdrop-blur-md shadow-xs"
           : "py-5 bg-[var(--bg)]"
@@ -37,70 +40,73 @@ export function Navbar() {
             href="/"
             className="text-[14px] font-semibold tracking-wider uppercase text-[var(--text)] hover:text-[var(--accent)] transition-colors inline-block"
           >
-            SIYAB AHMAD
+            SIAB AHMAD
           </Link>
         </div>
 
         {/* CENTER: Main Navigation Links (Desktop) */}
         <nav
           aria-label="Primary Navigation"
-          className="hidden md:flex items-center gap-8 justify-center"
+          className="hidden md:flex items-center gap-2 lg:gap-4 justify-center"
         >
           <Link
             href="/"
-            className="text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+            className="relative px-2.5 py-1 rounded-[4px] text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--accent-subtle)] transition-all duration-200 group"
           >
-            HOME
+            <span>HOME</span>
+            <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--accent)] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center" />
           </Link>
           <Link
             href="/#work"
-            className="text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+            className="relative px-2.5 py-1 rounded-[4px] text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--accent-subtle)] transition-all duration-200 group"
           >
-            WORK
+            <span>WORK</span>
+            <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--accent)] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center" />
           </Link>
           <Link
             href="/#about"
-            className="text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+            className="relative px-2.5 py-1 rounded-[4px] text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--accent-subtle)] transition-all duration-200 group"
           >
-            ABOUT
+            <span>ABOUT</span>
+            <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--accent)] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center" />
           </Link>
           <Link
             href="/#experience"
-            className="text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+            className="relative px-2.5 py-1 rounded-[4px] text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--accent-subtle)] transition-all duration-200 group"
           >
-            EXPERIENCE
+            <span>EXPERIENCE</span>
+            <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--accent)] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center" />
           </Link>
           <Link
             href="/#contact"
-            className="text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors"
+            className="relative px-2.5 py-1 rounded-[4px] text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--accent-subtle)] transition-all duration-200 group"
           >
-            CONTACT
+            <span>CONTACT</span>
+            <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--accent)] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center" />
           </Link>
         </nav>
 
         {/* RIGHT: Actions (Desktop) */}
-        <div className="hidden md:flex flex-1 items-center justify-end gap-6">
+        <div className="hidden md:flex flex-1 items-center justify-end gap-3 lg:gap-4">
           <ProjectsDropdown />
           <a
             href="/resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors cursor-pointer"
+            className="relative px-3 py-1.5 rounded-[4px] text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent-subtle)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer group shadow-2xs"
           >
-            RESUME
+            <span>RESUME</span>
+            <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--accent)] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center" />
           </a>
-          <div className="h-3 w-[1px] bg-[var(--border)]" />
-          <ThemeToggle />
         </div>
 
         {/* Mobile Text-Based Trigger */}
         <div className="flex items-center gap-4 md:hidden">
-          <ThemeToggle className="text-[12px]" />
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle Navigation Menu"
-            className="text-[13px] font-medium tracking-wider uppercase text-[var(--text)] hover:text-[var(--accent)] px-2 py-1 border border-[var(--border)] rounded cursor-pointer"
+            className="text-[13px] font-medium tracking-wider uppercase text-[var(--text)] hover:text-[var(--accent)] px-2.5 py-1 border border-[var(--border)] rounded cursor-pointer"
           >
             {mobileMenuOpen ? "CLOSE" : "MENU"}
           </button>
@@ -167,7 +173,7 @@ export function Navbar() {
               CONTACT
             </Link>
             <a
-              href="/images/resume.pdf"
+              href="/resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}

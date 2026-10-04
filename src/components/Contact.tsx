@@ -1,91 +1,175 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
 
 export function Contact() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
       id="contact"
-      className="py-20 md:py-32 border-t border-[var(--border)]"
+      ref={sectionRef}
+      className="py-8 sm:py-10 md:py-12 border-t border-[var(--border)] bg-white overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        <div className="max-w-3xl space-y-8">
-          <div>
-            <span className="text-[12px] font-mono-meta tracking-[0.2em] uppercase text-[var(--accent)] block mb-3">
-              CONNECT
+        <div className="max-w-3xl space-y-4 sm:space-y-5">
+          {/* Eyebrow */}
+          <div
+            className={`flex items-center gap-2 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              reducedMotion || isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-2"
+            }`}
+          >
+            <span
+              className={`h-[2px] bg-[var(--accent)] transition-all duration-500 ease-out ${
+                reducedMotion || isVisible ? "w-4 opacity-100" : "w-0 opacity-0"
+              }`}
+            />
+            <span className="text-[11.5px] font-mono-meta tracking-[0.2em] uppercase text-[var(--accent)] font-semibold">
+              GET IN TOUCH
             </span>
-            <h2 className="text-[36px] sm:text-[46px] md:text-[56px] font-bold tracking-tight text-[var(--text)] leading-tight">
-              LET&apos;S WORK TOGETHER
+          </div>
+
+          {/* Heading & Supporting statement */}
+          <div>
+            <h2
+              className={`text-[26px] sm:text-[34px] md:text-[38px] font-extrabold tracking-tight text-[var(--text)] leading-tight transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                reducedMotion || isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-3"
+              }`}
+              style={{ transitionDelay: reducedMotion ? "0ms" : "80ms" }}
+            >
+              Let&apos;s build something useful.
             </h2>
-            <p className="text-[18px] sm:text-[20px] text-[var(--text-secondary)] mt-4">
-              Have a project, opportunity or idea? Let&apos;s talk.
+            <p
+              className={`text-[14px] sm:text-[15px] text-[var(--text-secondary)] mt-1 max-w-2xl leading-relaxed transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                reducedMotion || isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-3"
+              }`}
+              style={{ transitionDelay: reducedMotion ? "0ms" : "160ms" }}
+            >
+              Have a project, full-time engineering role, or digital product in mind? Reach out directly via WhatsApp or email.
             </p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          {/* Compact Primary Actions */}
+          <div
+            className={`flex flex-wrap items-center gap-3 pt-2 transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              reducedMotion || isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-3"
+            }`}
+            style={{ transitionDelay: reducedMotion ? "0ms" : "240ms" }}
+          >
             <a
               href="https://wa.me/923435022880"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-[4px] text-[13px] sm:text-[14px] font-semibold tracking-wider uppercase transition-all duration-300 bg-[var(--btn-bg)] text-[var(--btn-text)] hover:opacity-90 hover:-translate-y-0.5 cursor-pointer shadow-xs"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-[4px] text-[13px] sm:text-[14px] font-semibold tracking-wider uppercase transition-all duration-200 bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer shadow-2xs"
             >
-              GET IN TOUCH
+              <span>Message on WhatsApp</span>
+              <span className="text-[14px]">↗</span>
             </a>
+
+            <a
+              href="mailto:msiyab10492@gmail.com"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-[4px] text-[13px] sm:text-[14px] font-semibold tracking-wider uppercase transition-all duration-200 bg-[var(--btn-bg)] text-white hover:bg-[var(--btn-hover)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer shadow-2xs"
+            >
+              <span>Send Email</span>
+            </a>
+
             <a
               href="/resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-[4px] text-[13px] sm:text-[14px] font-semibold tracking-wider uppercase transition-all duration-300 border border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-secondary)] hover:-translate-y-0.5 cursor-pointer"
+              className="inline-flex items-center justify-center px-4 py-2.5 sm:px-5 sm:py-3 rounded-[4px] text-[13px] sm:text-[14px] font-semibold tracking-wider uppercase transition-all duration-200 border border-[var(--border)] bg-white text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer shadow-2xs"
             >
-              VIEW RESUME
+              Resume (PDF)
             </a>
           </div>
 
-          {/* Text-based Connection Details (Strictly No Icons) */}
-          <div className="pt-8 border-t border-[var(--border)] grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="group">
-              <a
-                href="mailto:msiyab10492@gmail.com"
-                className="relative inline-flex items-center gap-1.5 text-[15px] font-medium text-[var(--text)] group-hover:text-[var(--accent)] transition-colors"
-              >
-                <span className="transition-transform duration-300 group-hover:translate-x-0.5">EMAIL</span>
-                <span className="text-[12px] font-mono-meta opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5">↗</span>
-                <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-[var(--accent)] transform scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
-              </a>
-              <span className="text-[12px] font-mono-meta text-[var(--text-secondary)] block mt-0.5">
-                msiyab10492@gmail.com
+          {/* Clean Contact Metadata Grid */}
+          <div className="pt-6 border-t border-[var(--border)] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="p-3.5 rounded-[4px] border border-[var(--border)] bg-[var(--bg-secondary)] hover:border-[var(--accent)] transition-colors">
+              <span className="text-[11px] font-mono-meta text-[var(--accent)] font-semibold uppercase block">
+                WHATSAPP
               </span>
+              <a
+                href="https://wa.me/923435022880"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[13px] font-semibold text-[var(--text)] hover:text-[var(--accent)] mt-0.5 block truncate"
+              >
+                +92 343 5022880
+              </a>
             </div>
 
-            <div className="group">
+            <div className="p-3.5 rounded-[4px] border border-[var(--border)] bg-[var(--bg-secondary)] hover:border-[var(--accent)] transition-colors">
+              <span className="text-[11px] font-mono-meta text-[var(--accent)] font-semibold uppercase block">
+                EMAIL
+              </span>
+              <a
+                href="mailto:contact@siabahmad.problos.com"
+                className="text-[13px] font-semibold text-[var(--text)] hover:text-[var(--accent)] mt-0.5 block truncate"
+              >
+                msiyab10492@gmail.com
+              </a>
+            </div>
+
+            <div className="p-3.5 rounded-[4px] border border-[var(--border)] bg-[var(--bg-secondary)] hover:border-[var(--accent)] transition-colors">
+              <span className="text-[11px] font-mono-meta text-[var(--accent)] font-semibold uppercase block">
+                GITHUB
+              </span>
               <a
                 href="https://github.com/siyabahmad13"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative inline-flex items-center gap-1.5 text-[15px] font-medium text-[var(--text)] group-hover:text-[var(--accent)] transition-colors"
+                className="text-[13px] font-semibold text-[var(--text)] hover:text-[var(--accent)] mt-0.5 block truncate"
               >
-                <span className="transition-transform duration-300 group-hover:translate-x-0.5">GITHUB</span>
-                <span className="text-[12px] font-mono-meta opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5">↗</span>
-                <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-[var(--accent)] transform scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
+                github.com/siyabahmad13
               </a>
-              <span className="text-[12px] font-mono-meta text-[var(--text-secondary)] block mt-0.5">
-                github.com/siabahmad
-              </span>
             </div>
 
-            <div className="group">
+            <div className="p-3.5 rounded-[4px] border border-[var(--border)] bg-[var(--bg-secondary)] hover:border-[var(--accent)] transition-colors">
+              <span className="text-[11px] font-mono-meta text-[var(--accent)] font-semibold uppercase block">
+                LINKEDIN
+              </span>
               <a
                 href="https://www.linkedin.com/in/siab-ahmad-khan/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative inline-flex items-center gap-1.5 text-[15px] font-medium text-[var(--text)] group-hover:text-[var(--accent)] transition-colors"
+                className="text-[13px] font-semibold text-[var(--text)] hover:text-[var(--accent)] mt-0.5 block truncate"
               >
-                <span className="transition-transform duration-300 group-hover:translate-x-0.5">LINKEDIN</span>
-                <span className="text-[12px] font-mono-meta opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0.5">↗</span>
-                <span className="absolute bottom-0 left-0 right-0 h-[1px] bg-[var(--accent)] transform scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
+                linkedin.com/in/siab-ahmad
               </a>
-              <span className="text-[12px] font-mono-meta text-[var(--text-secondary)] block mt-0.5">
-                linkedin.com/in/siabahmad
-              </span>
             </div>
           </div>
         </div>

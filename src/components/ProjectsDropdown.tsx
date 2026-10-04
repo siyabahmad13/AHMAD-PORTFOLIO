@@ -60,12 +60,13 @@ export function ProjectsDropdown({ onNavigate }: ProjectsDropdownProps) {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="true"
-        className="text-[13px] font-medium tracking-wider uppercase transition-colors hover:text-[var(--accent)] flex items-center gap-1.5 cursor-pointer py-1"
+        className="relative px-2.5 py-1 rounded-[4px] text-[13px] font-medium tracking-wider uppercase text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--accent-subtle)] transition-all duration-200 group flex items-center gap-1.5 cursor-pointer"
       >
         <span>PROJECTS</span>
         <span className="text-[10px] transform transition-transform duration-200">
           {isOpen ? "▴" : "▾"}
         </span>
+        <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--accent)] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-center" />
       </button>
 
       {isOpen && (

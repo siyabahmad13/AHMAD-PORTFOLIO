@@ -76,7 +76,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         </p>
 
         {/* 4. Large Hero Image */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[6px] border border-[var(--border)] bg-[#141413] shadow-md mt-8">
+        <div className="relative aspect-[19/9] w-full overflow-hidden rounded-[6px] border border-[var(--border)] bg-[#141413] shadow-md mt-8">
           <Image
             src={project.image}
             alt={`${project.title} Showcase`}

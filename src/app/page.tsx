@@ -1,12 +1,13 @@
 import React from "react";
 import { Hero } from "@/components/Hero";
-import { Projects } from "@/components/Projects";
+import { ProjectCarousel } from "@/components/ProjectCarousel";
+import { Initiatives } from "@/components/Initiatives";
 import { About } from "@/components/About";
 import { Experience } from "@/components/Experience";
-import { OtherWork } from "@/components/OtherWork";
-import { Problos } from "@/components/Problos";
 import { Skills } from "@/components/Skills";
+import { Education } from "@/components/Education";
 import { Certifications } from "@/components/Certifications";
+import { Interests } from "@/components/Interests";
 import { Contact } from "@/components/Contact";
 
 export default function HomePage() {
@@ -15,8 +16,8 @@ export default function HomePage() {
       {/* 2. HERO */}
       <Hero />
 
-      {/* 3. SELECTED WORK */}
-      <Projects />
+      {/* 3. SELECTED WORK / PROJECT CAROUSEL */}
+      <ProjectCarousel />
 
       {/* 4. ABOUT */}
       <About />
@@ -24,17 +25,20 @@ export default function HomePage() {
       {/* 5. EXPERIENCE */}
       <Experience />
 
-      {/* 6. OTHER WORK */}
-      <OtherWork />
-
-      {/* 7. PROBLOS */}
-      <Problos />
-
-      {/* 8. SKILLS */}
+      {/* 6. SKILLS */}
       <Skills />
 
-      {/* 9. CERTIFICATIONS */}
+      {/* 7. EDUCATION */}
+      <Education />
+
+      {/* 8. CERTIFICATIONS */}
       <Certifications />
+
+      {/* 9. INITIATIVES */}
+      <Initiatives />
+
+      {/* 10. INTERESTS */}
+      <Interests />
 
       {/* 10. CONTACT */}
       <Contact />

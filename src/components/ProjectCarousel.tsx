@@ -9,166 +9,341 @@ export function ProjectCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStartX, setDragStartX] = useState(0);
-  const [dragDeltaX, setDragDeltaX] = useState(0);
-  const [autoplayProgress, setAutoplayProgress] = useState(0);
+  const [dragStartY, setDragStartY] = useState(0);
+  const [dragDeltaY, setDragDeltaY] = useState(0);
+  const [isRevealed, setIsRevealed] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const [progress, setProgress] = useState(0);
 
+  const sectionRef = useRef<HTMLElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<NodeJS.Timeout | null>(null);
 
-  const totalProjects = projects.length; // 10 projects
-  const AUTOPLAY_DURATION = 5000; // 5 seconds
-  const PROGRESS_TICK = 50;
+  const totalProjects = projects.length;
+  const AUTOPLAY_DURATION = 5000;
 
-  // Check prefers-reduced-motion
+  /*
+   * ----------------------------------------
+   * REDUCED MOTION
+   * ----------------------------------------
+   */
+
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mediaQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+
     setReducedMotion(mediaQuery.matches);
-    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+
+    const handler = (event: MediaQueryListEvent) => {
+      setReducedMotion(event.matches);
+    };
+
     mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handler);
+    };
   }, []);
 
+  /*
+   * ----------------------------------------
+   * SCROLL REVEAL
+   * ----------------------------------------
+   */
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+
+        if (entry.isIntersecting) {
+          setIsRevealed(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.15,
+      }
+    );
+
+    observer.observe(sectionRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  /*
+   * ----------------------------------------
+   * PROJECT NAVIGATION
+   * ----------------------------------------
+   */
+
   const goToProject = useCallback(
-    (index: number) => {
-      const nextIdx = (index + totalProjects) % totalProjects;
-      setCurrentIndex(nextIdx);
-      setAutoplayProgress(0);
+    (index: number, moveDirection?: 1 | -1) => {
+      const nextIndex =
+        (index + totalProjects) % totalProjects;
+
+      setDirection(moveDirection ?? 1);
+      setCurrentIndex(nextIndex);
+      setProgress(0);
     },
     [totalProjects]
   );
 
   const nextProject = useCallback(() => {
-    goToProject(currentIndex + 1);
+    goToProject(currentIndex + 1, 1);
   }, [currentIndex, goToProject]);
 
   const prevProject = useCallback(() => {
-    goToProject(currentIndex - 1);
+    goToProject(currentIndex - 1, -1);
   }, [currentIndex, goToProject]);
 
-  // Autoplay and progress bar handling
-  useEffect(() => {
-    if (isPaused || isDragging) return;
+  /*
+   * ----------------------------------------
+   * AUTOPLAY
+   * ----------------------------------------
+   */
 
-    setAutoplayProgress(0);
+  useEffect(() => {
+    if (isPaused || isDragging || reducedMotion) {
+      return;
+    }
+
+    setProgress(0);
+
     const startTime = Date.now();
 
-    progressIntervalRef.current = setInterval(() => {
+    progressRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
-      const progress = Math.min((elapsed / AUTOPLAY_DURATION) * 100, 100);
-      setAutoplayProgress(progress);
-    }, PROGRESS_TICK);
+
+      const value = Math.min(
+        (elapsed / AUTOPLAY_DURATION) * 100,
+        100
+      );
+
+      setProgress(value);
+    }, 50);
 
     timerRef.current = setTimeout(() => {
       nextProject();
     }, AUTOPLAY_DURATION);
 
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      if (progressRef.current) {
+        clearInterval(progressRef.current);
+      }
     };
-  }, [currentIndex, isPaused, isDragging, nextProject]);
+  }, [
+    currentIndex,
+    isPaused,
+    isDragging,
+    reducedMotion,
+    nextProject,
+  ]);
 
-  // Keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft") {
-      prevProject();
-    } else if (e.key === "ArrowRight") {
-      nextProject();
-    }
-  };
+  /*
+   * ----------------------------------------
+   * POINTER / SWIPE
+   * ----------------------------------------
+   */
 
-  // Drag / Swipe handlers
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (e.button !== 0) return;
+  const handlePointerDown = (
+    event: React.PointerEvent
+  ) => {
+    if (event.button !== 0) return;
+
     setIsDragging(true);
-    setDragStartX(e.clientX);
-    setDragDeltaX(0);
+    setDragStartY(event.clientY);
+    setDragDeltaY(0);
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
+  const handlePointerMove = (
+    event: React.PointerEvent
+  ) => {
     if (!isDragging) return;
-    const delta = e.clientX - dragStartX;
-    setDragDeltaX(delta);
+
+    setDragDeltaY(event.clientY - dragStartY);
   };
 
   const handlePointerUp = () => {
     if (!isDragging) return;
-    const threshold = 40; // Drag threshold in px
-    if (dragDeltaX < -threshold) {
+
+    const threshold = 45;
+
+    if (dragDeltaY < -threshold) {
       nextProject();
-    } else if (dragDeltaX > threshold) {
+    }
+
+    if (dragDeltaY > threshold) {
       prevProject();
     }
+
     setIsDragging(false);
-    setDragDeltaX(0);
+    setDragDeltaY(0);
   };
 
   const activeProject = projects[currentIndex];
 
-  // Circular offset relative to active project (-5 to +5 for 10 items)
-  const getOffset = (idx: number) => {
-    let diff = idx - currentIndex;
-    while (diff > totalProjects / 2) diff -= totalProjects;
-    while (diff < -totalProjects / 2) diff += totalProjects;
-    return diff;
+  const nextProjectData =
+    projects[(currentIndex + 1) % totalProjects];
+
+  const prevProjectData =
+    projects[
+      (currentIndex - 1 + totalProjects) %
+        totalProjects
+    ];
+
+  /*
+   * ----------------------------------------
+   * PROJECT CHANGE ANIMATION
+   * ----------------------------------------
+   */
+
+  const getAnimationClass = () => {
+    if (reducedMotion) {
+      return "";
+    }
+
+    return direction === 1
+      ? "project-enter-up"
+      : "project-enter-down";
   };
 
   return (
     <section
+      ref={sectionRef}
       id="work"
-      aria-label="Selected Work Showcase"
-      className="py-14 sm:py-20 border-t border-[var(--border)] overflow-hidden select-none focus:outline-none"
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
+      aria-label="Selected Work"
+      className="
+        relative
+        overflow-hidden
+        border-t
+        border-[var(--border)]
+        bg-[var(--bg-secondary)]
+        py-10
+        sm:py-12
+        md:py-14
+        transition-all
+        duration-1000
+      "
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
-        {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 gap-4">
-          <div>
-            <span className="text-[12px] font-mono-meta tracking-[0.2em] uppercase text-[var(--accent)] block mb-2 font-medium">
-              PORTFOLIO SHOWCASE
-            </span>
-            <h2 className="text-[34px] sm:text-[44px] md:text-[50px] font-bold tracking-tight text-[var(--text)] leading-none">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8">
+
+        {/* =====================================
+            HEADER
+        ===================================== */}
+
+        <div className="mb-7 sm:mb-8">
+
+          <div className="flex items-center gap-2 mb-2">
+            <span className="h-[2px] w-5 bg-[var(--accent)]" />
+
+            <span
+              className="
+                text-[10px]
+                sm:text-[11px]
+                font-mono-meta
+                tracking-[0.18em]
+                uppercase
+                text-[var(--accent)]
+                font-semibold
+              "
+            >
               SELECTED WORK
-            </h2>
-            <p className="text-[15px] sm:text-[16px] text-[var(--text-secondary)] mt-2">
-              A selection of software projects and digital products.
-            </p>
+            </span>
           </div>
 
-          {/* Minimal Controls on Desktop Top Right */}
-          <div className="hidden sm:flex items-center gap-3">
-            <button
-              type="button"
-              onClick={prevProject}
-              aria-label="Previous project"
-              className="h-10 w-10 rounded-[4px] border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center text-[16px] text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all cursor-pointer"
+          <div
+            className="
+              flex
+              flex-col
+              sm:flex-row
+              sm:items-end
+              sm:justify-between
+              gap-3
+            "
+          >
+
+            <div>
+              <h2
+                className="
+                  text-[27px]
+                  sm:text-[32px]
+                  md:text-[36px]
+                  font-bold
+                  tracking-tight
+                  leading-none
+                  text-[var(--text)]
+                "
+              >
+                Projects I&apos;ve Built
+              </h2>
+
+              <p
+                className="
+                  mt-2
+                  max-w-xl
+                  text-[13px]
+                  sm:text-[14px]
+                  leading-relaxed
+                  text-[var(--text-secondary)]
+                "
+              >
+                Web applications, AI systems and digital
+                products built to solve real problems.
+              </p>
+            </div>
+
+            {/* PROJECT NUMBER */}
+
+            <div
+              className="
+                flex
+                items-center
+                gap-2
+                font-mono-meta
+                text-[11px]
+                text-[var(--text-secondary)]
+              "
             >
-              ←
-            </button>
-            <button
-              type="button"
-              onClick={nextProject}
-              aria-label="Next project"
-              className="h-10 w-10 rounded-[4px] border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center text-[16px] text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all cursor-pointer"
-            >
-              →
-            </button>
+              <span className="text-[var(--accent)] font-bold">
+                {(currentIndex + 1)
+                  .toString()
+                  .padStart(2, "0")}
+              </span>
+
+              <span>/</span>
+
+              <span>
+                {totalProjects
+                  .toString()
+                  .padStart(2, "0")}
+              </span>
+            </div>
+
           </div>
         </div>
 
-        {/* 3D CAROUSEL STAGE */}
+
+        {/* =====================================
+            MAIN PRODUCT DECK
+        ===================================== */}
+
         <div
-          ref={carouselRef}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => {
             setIsPaused(false);
+
             if (isDragging) {
               setIsDragging(false);
-              setDragDeltaX(0);
+              setDragDeltaY(0);
             }
           }}
           onPointerDown={handlePointerDown}
@@ -176,183 +351,516 @@ export function ProjectCarousel() {
           onPointerUp={handlePointerUp}
           onPointerCancel={() => {
             setIsDragging(false);
-            setDragDeltaX(0);
+            setDragDeltaY(0);
           }}
-          style={{ perspective: "1300px" }}
-          className="relative w-full h-[250px] sm:h-[350px] md:h-[440px] lg:h-[490px] flex items-center justify-center cursor-grab active:cursor-grabbing touch-pan-y rounded-[8px] bg-[var(--carousel-bg)] border border-[var(--carousel-stage-border)] transition-colors duration-300"
+          className={`
+            product-reveal
+            ${isRevealed ? "product-reveal-visible" : ""}
+            relative
+            grid
+            grid-cols-1
+            lg:grid-cols-[0.72fr_1.28fr]
+            gap-6
+            lg:gap-8
+            items-center
+            select-none
+            touch-pan-y
+          `}
         >
-          {projects.map((project, idx) => {
-            const offset = getOffset(idx);
-            const isActive = offset === 0;
-            const isLeft = offset === -1;
-            const isRight = offset === 1;
-            const isFar = Math.abs(offset) >= 2;
 
-            let translateX = "0%";
-            let translateZ = "0px";
-            let rotateY = "0deg";
-            let scale = 1;
-            let opacity: number | string = 1;
-            let zIndex = 10;
-            let pointerEvents: "auto" | "none" = "auto";
-            let filter = "none";
+          {/* ===================================
+              LEFT INFORMATION PANEL
+          =================================== */}
 
-            if (isActive) {
-              scale = 1;
-              opacity = 1;
-              zIndex = 30;
-              translateX = "0%";
-              translateZ = "30px";
-              rotateY = "0deg";
-              filter = "none";
-            } else if (isLeft) {
-              scale = 0.84;
-              opacity = "var(--side-card-opacity)";
-              zIndex = 20;
-              translateX = "-58%";
-              translateZ = "-60px";
-              rotateY = reducedMotion ? "0deg" : "9deg";
-              filter = "var(--side-card-filter)";
-            } else if (isRight) {
-              scale = 0.84;
-              opacity = "var(--side-card-opacity)";
-              zIndex = 20;
-              translateX = "58%";
-              translateZ = "-60px";
-              rotateY = reducedMotion ? "0deg" : "-9deg";
-              filter = "var(--side-card-filter)";
-            } else if (isFar) {
-              scale = 0.68;
-              opacity = 0;
-              zIndex = 5;
-              translateX = offset < 0 ? "-100%" : "100%";
-              translateZ = "-180px";
-              rotateY = offset < 0 ? "15deg" : "-15deg";
-              pointerEvents = "none";
-              filter = "none";
-            }
+          <div className="order-2 lg:order-1">
 
-            const formattedNum = (idx + 1).toString().padStart(2, "0");
+            <div
+              className="
+                flex
+                items-center
+                gap-2
+                mb-3
+              "
+            >
 
-            return (
-              <div
-                key={project.id}
-                onClick={() => {
-                  if (!isActive) goToProject(idx);
-                }}
-                style={{
-                  transform: `translateX(${translateX}) translateZ(${translateZ}) rotateY(${rotateY}) scale(${scale})`,
-                  opacity,
-                  zIndex,
-                  pointerEvents,
-                  filter,
-                  transition: isDragging
-                    ? "none"
-                    : reducedMotion
-                    ? "opacity 200ms ease"
-                    : "transform 750ms cubic-bezier(0.16, 1, 0.3, 1), opacity 750ms ease, filter 750ms ease",
-                }}
-                className={`group/card absolute w-[86%] sm:w-[68%] md:w-[60%] lg:w-[56%] max-w-[760px] aspect-[16/9] rounded-[6px] overflow-hidden border bg-[var(--bg-secondary)] shadow-xl ${
-                  isActive
-                    ? "border-[var(--accent)] shadow-2xl cursor-default"
-                    : "border-[var(--border)] cursor-pointer hover:border-[var(--accent)]/50 hover:opacity-95"
-                }`}
+              <span
+                className="
+                  text-[11px]
+                  font-mono-meta
+                  uppercase
+                  tracking-[0.15em]
+                  text-[var(--accent)]
+                  font-semibold
+                "
               >
-                <div className="relative w-full h-full bg-[#141413]">
-                  <Image
-                    src={project.image}
-                    alt={`${project.title} — ${project.category}`}
-                    fill
-                    sizes="(max-width: 768px) 85vw, 680px"
-                    priority={isActive || isLeft || isRight}
-                    className="object-cover transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/card:scale-[1.025] group-hover/card:contrast-[1.03] group-hover/card:saturate-[1.05]"
-                    draggable={false}
-                  />
-
-                  {/* Corner Badge on Side Cards */}
-                  {!isActive && (
-                    <div className="absolute top-3 left-3 bg-[#111111]/85 backdrop-blur-xs px-2.5 py-1 rounded text-[11px] font-mono-meta text-[#F5F5F2] border border-[#333330]">
-                      {formattedNum} — {project.title}
-                    </div>
-                  )}
-
-                  {/* Active Accent Line */}
-                  {isActive && (
-                    <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--accent)]" />
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* ACTIVE PROJECT INFORMATION (Displayed exclusively for the center project) */}
-        <div className="mt-8 sm:mt-12 text-center max-w-2xl mx-auto space-y-3">
-          <h3 className="text-[28px] sm:text-[34px] font-bold tracking-tight text-[var(--text)]">
-            {activeProject.title}
-          </h3>
-
-          <div className="text-[13px] font-mono-meta tracking-wider uppercase text-[var(--accent)] font-medium">
-            {activeProject.category}
-          </div>
-
-          <p className="text-[15px] sm:text-[16px] text-[var(--text-secondary)] leading-relaxed pt-1">
-            {activeProject.description}
-          </p>
-
-          <div className="pt-3">
-            <Link
-              href={`/work/${activeProject.slug}`}
-              className="inline-flex items-center gap-2 text-[13px] sm:text-[14px] font-semibold tracking-wider uppercase text-[var(--text)] hover:text-[var(--accent)] transition-colors group"
-            >
-              <span>VIEW CASE STUDY</span>
-              <span className="transition-transform duration-300 group-hover:translate-x-1">
-                →
+                {activeProject.category}
               </span>
-            </Link>
-          </div>
-        </div>
 
-        {/* PROGRESS INDICATOR & NAVIGATION BAR */}
-        <div className="mt-8 pt-6 border-t border-[var(--border)] flex items-center justify-between">
-          {/* Mobile Arrow Controls */}
-          <div className="flex sm:hidden items-center gap-2">
-            <button
-              type="button"
-              onClick={prevProject}
-              aria-label="Previous project"
-              className="h-8 w-8 rounded-[3px] border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center text-[13px] text-[var(--text)] active:bg-[var(--accent)] active:text-black cursor-pointer"
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              onClick={nextProject}
-              aria-label="Next project"
-              className="h-8 w-8 rounded-[3px] border border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-center text-[13px] text-[var(--text)] active:bg-[var(--accent)] active:text-black cursor-pointer"
-            >
-              →
-            </button>
-          </div>
-
-          {/* Thin Progress Bar Indicator */}
-          <div className="flex-1 max-w-xs mx-4 hidden sm:block">
-            <div className="h-[2px] w-full bg-[var(--border)] overflow-hidden rounded-full">
-              <div
-                style={{ width: `${autoplayProgress}%` }}
-                className="h-full bg-[var(--accent)] transition-all duration-75 ease-linear"
+              <span
+                className="
+                  h-1
+                  w-1
+                  rounded-full
+                  bg-[var(--border)]
+                "
               />
+
+              <span
+                className="
+                  text-[11px]
+                  font-mono-meta
+                  text-[var(--text-muted)]
+                "
+              >
+                PROJECT
+              </span>
+
             </div>
+
+
+            <div
+              key={activeProject.id}
+              className={getAnimationClass()}
+            >
+
+              <h3
+                className="
+                  text-[28px]
+                  sm:text-[34px]
+                  md:text-[40px]
+                  lg:text-[44px]
+                  font-bold
+                  tracking-[-0.03em]
+                  leading-[0.98]
+                  text-[var(--text)]
+                "
+              >
+                {activeProject.title}
+              </h3>
+
+              <p
+                className="
+                  mt-4
+                  max-w-md
+                  text-[13.5px]
+                  sm:text-[14px]
+                  leading-[1.7]
+                  text-[var(--text-secondary)]
+                "
+              >
+                {activeProject.description}
+              </p>
+
+
+              {/* CASE STUDY */}
+
+              <div className="mt-5">
+
+                <Link
+                  href={`/work/${activeProject.slug}`}
+                  className="
+                    group
+                    inline-flex
+                    items-center
+                    gap-2
+                    border-b
+                    border-[var(--accent)]
+                    pb-1
+                    text-[11.5px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.12em]
+                    text-[var(--text)]
+                    transition-all
+                    hover:text-[var(--accent)]
+                  "
+                >
+                  View Case Study
+
+                  <span
+                    className="
+                      transition-transform
+                      duration-300
+                      group-hover:translate-x-1
+                    "
+                  >
+                    →
+                  </span>
+                </Link>
+
+              </div>
+
+            </div>
+
+
+            {/* =================================
+                PREV / NEXT CONTROLS
+            ================================= */}
+
+            <div
+              className="
+                mt-7
+                grid
+                grid-cols-2
+                gap-2
+              "
+            >
+
+              {/* PREVIOUS */}
+
+              <button
+                type="button"
+                onClick={prevProject}
+                aria-label={`Previous project: ${prevProjectData.title}`}
+                className="
+                  group
+                  min-w-0
+                  rounded-[3px]
+                  border
+                  border-[var(--border)]
+                  bg-white
+                  px-3
+                  py-2.5
+                  text-left
+                  cursor-pointer
+                  transition-all
+                  duration-200
+                  hover:border-[var(--accent)]
+                  hover:bg-[var(--accent)]
+                  hover:text-white
+                "
+              >
+
+                <span
+                  className="
+                    block
+                    mb-1
+                    text-[9px]
+                    uppercase
+                    tracking-[0.16em]
+                    text-[var(--text-muted)]
+                    transition-colors
+                    group-hover:text-white/80
+                  "
+                >
+                  Previous
+                </span>
+
+                <span
+                  className="
+                    flex
+                    items-center
+                    gap-1.5
+                    truncate
+                    text-[12px]
+                    font-semibold
+                  "
+                >
+                  <span>←</span>
+
+                  <span className="truncate">
+                    {prevProjectData.title}
+                  </span>
+                </span>
+
+              </button>
+
+
+              {/* NEXT */}
+
+              <button
+                type="button"
+                onClick={nextProject}
+                aria-label={`Next project: ${nextProjectData.title}`}
+                className="
+                  group
+                  min-w-0
+                  rounded-[3px]
+                  border
+                  border-[var(--accent)]
+                  bg-[var(--accent)]
+                  px-3
+                  py-2.5
+                  text-right
+                  text-white
+                  cursor-pointer
+                  transition-all
+                  duration-200
+                  hover:bg-transparent
+                  hover:text-[var(--accent)]
+                "
+              >
+
+                <span
+                  className="
+                    block
+                    mb-1
+                    text-[9px]
+                    uppercase
+                    tracking-[0.16em]
+                    text-white/80
+                    transition-colors
+                    group-hover:text-[var(--accent)]
+                  "
+                >
+                  Next
+                </span>
+
+                <span
+                  className="
+                    flex
+                    items-center
+                    justify-end
+                    gap-1.5
+                    truncate
+                    text-[12px]
+                    font-semibold
+                  "
+                >
+
+                  <span className="truncate">
+                    {nextProjectData.title}
+                  </span>
+
+                  <span>→</span>
+
+                </span>
+
+              </button>
+
+            </div>
+
           </div>
 
-          {/* Step Counter: 01 / 10 */}
-          <div className="text-[13px] font-mono-meta text-[var(--text-secondary)] tracking-wider">
-            <span className="text-[var(--text)] font-semibold">
-              {(currentIndex + 1).toString().padStart(2, "0")}
-            </span>{" "}
-            / {totalProjects.toString().padStart(2, "0")}
+
+          {/* ===================================
+              RIGHT PRODUCT IMAGE
+          =================================== */}
+
+          <div className="order-1 lg:order-2">
+
+            <div className="relative w-full">
+
+              {/* ACTIVE IMAGE */}
+
+              <div
+                key={activeProject.id}
+                className={`
+                  relative
+                  aspect-[16/9]
+                  w-full
+                  overflow-hidden
+                  border
+                  border-[var(--border)]
+                  rounded-[3px]
+                  bg-white
+                  shadow-[0_18px_45px_-20px_rgba(0,0,0,0.16)]
+                  ${getAnimationClass()}
+                `}
+              >
+
+                <Image
+                  src={activeProject.image}
+                  alt={`${activeProject.title} — ${activeProject.category}`}
+                  fill
+                  priority
+                  sizes="
+                    (max-width: 1024px) 100vw,
+                    760px
+                  "
+                  className="
+                    object-cover
+                    transition-transform
+                    duration-700
+                    ease-out
+                    hover:scale-[1.025]
+                  "
+                  draggable={false}
+                />
+
+
+                {/* IMAGE OVERLAY */}
+
+                <div
+                  className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                    bg-gradient-to-t
+                    from-black/10
+                    via-transparent
+                    to-transparent
+                  "
+                />
+
+
+                {/* IMAGE NUMBER */}
+
+                <div
+                  className="
+                    absolute
+                    bottom-3
+                    right-3
+                    z-10
+                    border
+                    border-black/10
+                    bg-white/90
+                    px-2
+                    py-1
+                    text-[10px]
+                    font-mono-meta
+                    font-semibold
+                    text-[var(--text)]
+                    backdrop-blur-sm
+                  "
+                >
+                  {(currentIndex + 1)
+                    .toString()
+                    .padStart(2, "0")}
+                </div>
+
+              </div>
+
+
+              {/* =================================
+                  NEXT PROJECT PREVIEW
+              ================================= */}
+
+              <div
+                className="
+                  mt-3
+                  flex
+                  items-center
+                  justify-between
+                  gap-4
+                  rounded-[3px]
+                  border
+                  border-[var(--border)]
+                  bg-white
+                  px-3
+                  py-2.5
+                  shadow-[0_8px_25px_-18px_rgba(0,0,0,0.25)]
+                "
+              >
+
+                <div
+                  className="
+                    flex
+                    min-w-0
+                    items-center
+                    gap-3
+                  "
+                >
+
+                  <div
+                    className="
+                      relative
+                      h-[42px]
+                      w-[72px]
+                      shrink-0
+                      overflow-hidden
+                      rounded-[2px]
+                      border
+                      border-[var(--border)]
+                      bg-white
+                    "
+                  >
+
+                    <Image
+                      src={nextProjectData.image}
+                      alt=""
+                      fill
+                      sizes="72px"
+                      className="
+                        object-cover
+                        opacity-75
+                        transition-transform
+                        duration-500
+                        hover:scale-105
+                      "
+                    />
+
+                  </div>
+
+
+                  <div className="min-w-0">
+
+                    <span
+                      className="
+                        block
+                        text-[9px]
+                        uppercase
+                        tracking-[0.14em]
+                        text-[var(--text-muted)]
+                      "
+                    >
+                      Up next
+                    </span>
+
+                    <span
+                      className="
+                        block
+                        truncate
+                        text-[11.5px]
+                        font-semibold
+                        text-[var(--text)]
+                      "
+                    >
+                      {nextProjectData.title}
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                {/* PROGRESS */}
+
+                <div
+                  className="
+                    hidden
+                    sm:block
+                    w-28
+                    shrink-0
+                  "
+                >
+
+                  <div
+                    className="
+                      h-[3px]
+                      w-full
+                      overflow-hidden
+                      rounded-full
+                      bg-[var(--border)]
+                    "
+                  >
+
+                    <div
+                      style={{
+                        width: `${progress}%`,
+                      }}
+                      className="
+                        h-full
+                        rounded-full
+                        bg-[var(--accent)]
+                        transition-[width]
+                        duration-75
+                        ease-linear
+                      "
+                    />
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
+
         </div>
+
       </div>
     </section>
   );

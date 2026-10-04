@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
@@ -110,7 +109,6 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} scroll-smooth antialiased`}
     >
       <head>
@@ -119,16 +117,14 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-[var(--bg)] text-[var(--text)] selection:bg-[var(--accent)] selection:text-black">
-        <ThemeProvider>
-          {/* 1. NAVBAR */}
-          <Navbar />
-          
-          <div className="flex-1">{children}</div>
+      <body className="min-h-screen flex flex-col bg-[var(--bg)] text-[var(--text)] selection:bg-[var(--accent)] selection:text-white">
+        {/* 1. NAVBAR */}
+        <Navbar />
+        
+        <div className="flex-1">{children}</div>
 
-          {/* 11. FOOTER */}
-          <Footer />
-        </ThemeProvider>
+        {/* 11. FOOTER */}
+        <Footer />
       </body>
     </html>
   );
